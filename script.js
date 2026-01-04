@@ -449,9 +449,10 @@ class UI {
         // 5x5 grid pixel positions
         const CELL_SIZE = 70;
         const GAP = 12;
+        const WRAPPER_PADDING = 10;
 
-        const left = GAP + c * (CELL_SIZE + GAP);
-        const top = GAP + r * (CELL_SIZE + GAP);
+        const left = WRAPPER_PADDING + GAP + c * (CELL_SIZE + GAP);
+        const top = WRAPPER_PADDING + GAP + r * (CELL_SIZE + GAP);
 
         dirs.forEach(([dr, dc]) => {
             const btn = document.createElement('div');
