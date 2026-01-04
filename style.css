@@ -35,62 +35,7 @@ body {
     overflow: hidden;
 }
 
-/* Dynamic Background Blobs */
-.background-blobs {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    overflow: hidden;
-}
 
-.blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.6;
-    animation: float 20s infinite ease-in-out;
-}
-
-.blob-1 {
-    width: 400px;
-    height: 400px;
-    background: #6c5ce7;
-    top: -100px;
-    left: -100px;
-}
-
-.blob-2 {
-    width: 300px;
-    height: 300px;
-    background: #ff4757;
-    bottom: -50px;
-    right: -50px;
-    animation-delay: -5s;
-}
-
-.blob-3 {
-    width: 250px;
-    height: 250px;
-    background: #ffa502;
-    bottom: 50%;
-    left: 50%;
-    animation-delay: -10s;
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translate(0, 0);
-    }
-
-    50% {
-        transform: translate(30px, 50px);
-    }
-}
 
 /* Glass Container */
 .glass-container {
@@ -516,9 +461,7 @@ ul {
         order: 2;
     }
 
-    .cell {
-        /* Smaller cells for mobile if needed, but 70px * 5 + gaps is ~400px. */
-    }
+
 
 
     :root {
