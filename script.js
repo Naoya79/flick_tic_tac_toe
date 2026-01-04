@@ -113,24 +113,25 @@ class Game {
         let simBoard = this.board.map(row => [...row]);
         const MOVER = simBoard[startR][startC];
 
-        // Remove mover from start
-        simBoard[startR][startC] = null;
-
-        // Recursive push function
-        // piece: color of the piece moving
-        // r, c: current position of the piece (it is "floating" now)
-        // dr, dc: direction
-        const movePiece = (piece, r, c, dr, dc, board) => {
+        // Process Move Function (Recursive)
+        const processMove = (piece, r, c, dr, dc, board) => {
             let currR = r;
             let currC = c;
 
+            // Remove piece from starting position (it's "floating" now)
+            // Note: In the first call, we already removed it? No, we should remove it here if it's on the board.
+            // But for the initial piece, we might want to just treat it as floating.
+            // Let's assume the passed (r,c) is the EMPTY valid start point for the scan buffer?
+            // No, (r,c) is where the piece *was*.
+
+            // Scan forward
             while (true) {
                 const nextR = currR + dr;
                 const nextC = currC + dc;
 
                 // 1. Check Wall
                 if (nextR < 0 || nextR >= CONFIG.ROWS || nextC < 0 || nextC >= CONFIG.COLS) {
-                    // Hit wall, stop at currR, currC
+                    // Hit wall. Stop at currR, currC.
                     board[currR][currC] = piece;
                     return;
                 }
@@ -138,25 +139,49 @@ class Game {
                 // 2. Check Piece
                 if (board[nextR][nextC] !== null) {
                     // Hit a piece!
-                    const hitPiece = board[nextR][nextC];
+                    // The mover stops at currR, currC (adjacent interaction).
+                    board[currR][currC] = piece;
 
-                    // The moving piece takes the spot of the hit piece
-                    board[nextR][nextC] = piece;
+                    // Newton's Cradle: Force propagates to the end of the chain.
+                    // Find the end of the chain starting at nextR, nextC.
+                    let chainR = nextR;
+                    let chainC = nextC;
+                    while (true) {
+                        const lookAheadR = chainR + dr;
+                        const lookAheadC = chainC + dc;
 
-                    // The hit piece continues in the same direction from nextR, nextC
-                    movePiece(hitPiece, nextR, nextC, dr, dc, board);
-                    return; // Done
+                        // Check if chain continues
+                        if (lookAheadR >= 0 && lookAheadR < CONFIG.ROWS &&
+                            lookAheadC >= 0 && lookAheadC < CONFIG.COLS &&
+                            board[lookAheadR][lookAheadC] !== null) {
+                            chainR = lookAheadR;
+                            chainC = lookAheadC;
+                        } else {
+                            // End of chain found at chainR, chainC.
+                            break;
+                        }
+                    }
+
+                    // The piece at chainR, chainC is the one that gets launched.
+                    const launcherPiece = board[chainR][chainC];
+
+                    // Remove it from the board
+                    board[chainR][chainC] = null;
+
+                    // Recurse: Move the launcher piece from its position
+                    processMove(launcherPiece, chainR, chainC, dr, dc, board);
+                    return;
                 }
 
                 // 3. Empty Space
-                // Continue moving
                 currR = nextR;
                 currC = nextC;
-                // Loop again
             }
         };
 
-        movePiece(MOVER, startR, startC, dr, dc, simBoard);
+        // Initial setup
+        simBoard[startR][startC] = null; // Lift the initial piece
+        processMove(MOVER, startR, startC, dr, dc, simBoard);
 
         return simBoard;
     }
